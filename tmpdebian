@@ -1,0 +1,27 @@
+#!/bin/bash
+set -e
+((EUID==0)) || { echo "run as root"; exit 1; }
+
+COPY="/var/lib/tmpdebian"
+SFS="/var/lib/tmpdebian.sfs"
+TMP=$(mktemp -d /tmp/container-XXXX)
+trap 'rm -rf "$TMP"' EXIT
+
+DEBIAN_RELEASE="trixie"
+
+# Check if squashfs exists
+[[ -f $SFS ]] || {
+    mkdir -p "$COPY"
+    debootstrap --variant=minbase "$DEBIAN_RELEASE" "$COPY" http://deb.debian.org/debian
+    passwd --root "$COPY" -d root
+    chroot "$COPY" apt-get update
+    chroot "$COPY" apt-get install -y "systemd-sysv"
+    if [[ $# -gt 0 ]]; then
+        chroot "$COPY" apt-get install -y "$@"
+    fi
+    mksquashfs "$COPY" "$SFS" -comp zstd
+    rm -rf "$COPY"
+}
+
+unsquashfs -f -d "$TMP" "$SFS"
+systemd-nspawn -D "$TMP" --boot --network-veth -E TERM=linux

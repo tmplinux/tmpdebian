@@ -1,0 +1,17 @@
+pkgbase = tmpdebian
+	pkgdesc = Part of the tmplinux suite. Temporary Arch Linux
+	pkgver = 1.0.0
+	pkgrel = 2
+	url = https://github.com/TheOddCell/tmpdebian
+	arch = any
+	license = MIT
+	depends = bash
+	depends = debootstrap
+	depends = shadow
+	depends = util-linux
+	depends = systemd
+	depends = squashfs-tools
+	source = tmpdebian
+	sha256sums = SKIP
+
+pkgname = tmpdebian
