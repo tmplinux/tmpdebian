@@ -1,6 +1,6 @@
 pkgname=tmpdebian
-pkgver=1.0.0
-pkgrel=2
+pkgver=1.0.1
+pkgrel=1
 pkgdesc="Part of the tmplinux suite. Temporary Arch Linux"
 arch=('any')
 url="https://github.com/TheOddCell/tmpdebian"
