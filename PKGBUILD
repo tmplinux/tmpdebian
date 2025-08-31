@@ -1,5 +1,5 @@
 pkgname=tmpdebian
-pkgver=1.0.3
+pkgver=1.0.4
 pkgrel=1
 pkgdesc="Part of the tmplinux suite. Temporary Arch Linux"
 arch=('any')
