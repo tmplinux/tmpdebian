@@ -10,7 +10,7 @@ trap 'rm -rf "$TMP"' EXIT
 DEBIAN_RELEASE="trixie"
 
 # Check if squashfs exists
-rm /var/lib/tmp*.sfs || true # clean up from before reunification
+rm /var/lib/tmp*.sfs 2>/dev/null|| true # clean up from before reunification
 [[ -f $SFS ]] || {
     mkdir -p "$COPY"
     debootstrap --variant=minbase "$DEBIAN_RELEASE" "$COPY" http://deb.debian.org/debian
@@ -25,4 +25,6 @@ rm /var/lib/tmp*.sfs || true # clean up from before reunification
 }
 
 unsquashfs -f -d "$TMP" "$SFS"
+basename "$TMP" > /run/tmpdebian
 systemd-nspawn -D "$TMP" --boot --network-veth -E TERM=linux
+rm /run/tmpdebian
