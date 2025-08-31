@@ -10,7 +10,7 @@ trap 'rm -rf "$TMP"' EXIT
 DEBIAN_RELEASE="trixie"
 
 # Check if squashfs exists
-rm /var/lib/tmp*.sfs # clean up from before reunification
+rm /var/lib/tmp*.sfs || yes# clean up from before reunification
 [[ -f $SFS ]] || {
     mkdir -p "$COPY"
     debootstrap --variant=minbase "$DEBIAN_RELEASE" "$COPY" http://deb.debian.org/debian
