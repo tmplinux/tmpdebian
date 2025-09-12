@@ -26,5 +26,5 @@ rm /var/lib/tmp*.sfs 2>/dev/null|| true # clean up from before reunification
 
 unsquashfs -f -d "$TMP" "$SFS"
 basename "$TMP" > /run/tmpdebian
-systemd-nspawn -D "$TMP" --boot --network-veth -E TERM=linux
+systemd-nspawn -D "$TMP" --boot -E TERM=linux
 rm /run/tmpdebian
