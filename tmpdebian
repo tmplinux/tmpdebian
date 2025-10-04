@@ -1,30 +1,18 @@
 #!/bin/bash
-set -e
-((EUID==0)) || { echo "run as root"; exit 1; }
-
-COPY="/var/lib/tmplinux/tmpdebian"
-SFS="/var/lib/tmplinux/tmpdebian.sfs"
-TMP=$(mktemp -d /tmp/container-XXXX)
-trap 'rm -rf "$TMP"' EXIT
-
+source /usr/lib/libtmplinux.sh
+NAME=debian
+init
 DEBIAN_RELEASE="trixie"
 
-# Check if squashfs exists
-rm /var/lib/tmp*.sfs 2>/dev/null|| true # clean up from before reunification
-[[ -f $SFS ]] || {
-    mkdir -p "$COPY"
-    debootstrap --variant=minbase "$DEBIAN_RELEASE" "$COPY" http://deb.debian.org/debian
-    passwd --root "$COPY" -d root
-    chroot "$COPY" apt-get update
-    chroot "$COPY" apt-get install -y "systemd-sysv"
+issfs || {
+    debootstrap --variant=minbase "$DEBIAN_RELEASE" "$TMP" http://deb.debian.org/debian
+    passwd --root "$TMP" -d root
+    chroot "$TMP" apt-get update
+    chroot "$TMP" apt-get install -y "systemd-sysv"
     if [[ $# -gt 0 ]]; then
-        chroot "$COPY" apt-get install -y "$@"
+        chroot "$TMP" apt-get install -y "$@"
     fi
-    mksquashfs "$COPY" "$SFS" -comp zstd
-    rm -rf "$COPY"
+    mksquashfs "$TMP" "$SFS" -comp zstd
 }
 
-unsquashfs -f -d "$TMP" "$SFS"
-basename "$TMP" > /run/tmpdebian
-systemd-nspawn -D "$TMP" --boot -E TERM=linux
-rm /run/tmpdebian
+boot $1
